@@ -97,7 +97,7 @@ public class TaskQueueApp {
     static public Task findRequest(String search){
         try{
             Task target = searchRequestHelper(search);
-            target.printRequest();
+            target.printTask();
             return target;
         }catch(NullPointerException e){
             System.out.println("Request " +search+ " does not exist in the system.");
@@ -140,7 +140,7 @@ class Queue{
         if (getTopTask() != null){
             Task targetRequest = getTopTask();
             System.out.println("Marking task \"" + targetRequest.getTaskID() + "\" as closed");
-            targetRequest = dequeue();
+            targetRequest = dequeueHelper();
             targetRequest.markStatus("Completed");
             return targetRequest;
         } else{
@@ -174,7 +174,7 @@ class Queue{
         }
         System.out.println("Current requests in queue:");
         for (Task r : queue){
-            r.printRequest();
+            r.printTask();
         }
     }
 }
@@ -209,9 +209,12 @@ class Task{
 
     public void markStatus(String x){
         status = x;
+        if (status == "Completed"){
+            this.assignee.userQueue.dequeueHelper();
+        }
     }
 
-    public void printRequest(){
-        System.out.println("Request ID: "+taskID+", Request status: "+status+", Title: "+title+", Assignee: "+assignee+", Target Date: "+targetDate+", Priority: "+priority);
+    public void printTask(){
+        System.out.println("Request ID: "+taskID+", Request status: "+status+", Title: "+title+", Assignee: "+assignee.getUsername()+", Target Date: "+targetDate+", Priority: "+priority);
     }
 }

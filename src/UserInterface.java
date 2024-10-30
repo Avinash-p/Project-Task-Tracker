@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-public class LoginInterface {
+public class UserInterface {
     public static final Hasher HASHER = new Hasher(2384798);
     public static UserDataBase userDB = new UserDataBase();
     public static final Scanner SCANNER = new Scanner(System.in);
@@ -15,7 +15,22 @@ public class LoginInterface {
     public static DateFormat dateFormatter = new SimpleDateFormat("MM-dd-yyyy");
     public static void main (){
         while (true){
-            System.out.println("Welcome! Enter a to create a user. Enter b to login with existing user. Enter c to create new task. Enter d to get all tasks for any user. Enter e to exit.");
+            System.out.println("Welcome to main menu! Enter a for user management menu. Enter b for task management menu. Enter c to exit.");
+            String input = SCANNER.nextLine();
+            if (input.equals("a")){
+                userManagement();
+            }
+            if (input.equals("b")){
+                taskManagement();
+            }
+            if (input.equals("c")){
+                break;
+            }
+        }
+    }
+    public static void userManagement(){
+        while (true){
+            System.out.println("Welcome to user management menu! Enter a to create a user. Enter b to login with existing user. Enter c to go back to main menu.");
             String input = SCANNER.nextLine();
             if (input.equals("a")){
                 userCreationFlow();
@@ -24,10 +39,26 @@ public class LoginInterface {
                 loginFlow();
             }
             if (input.equals("c")){
+                break;
+            }
+        }
+    }
+
+    public static void taskManagement(){
+        while (true){
+            System.out.println("Welcome to task management menu! Enter a to create a new task. Enter b to get all tasks for any user. Enter c to complete a task. Enter d to remove a task. Enter e to go back to main menu.");
+            String input = SCANNER.nextLine();
+            if (input.equals("a")){
                 createNewTaskWrapper();
             }
+            if (input.equals("b")){
+                getUserTasks();
+            }
+            if (input.equals("c")){
+                completeTask();
+            }
             if (input.equals("d")){
-                break;
+                removeTask();
             }
             if (input.equals("e")){
                 break;
@@ -88,7 +119,17 @@ public class LoginInterface {
         System.out.println("New task flow! Enter your username: ");
         String temp31 = SCANNER.nextLine();
         User temp3 = userDB.getUser(temp31);
-        System.out.println(temp3.getUserTasks());
+        System.out.println("List of all tasks for user "+temp31+":");
+        for (Task i : temp3.getUserTasks()){
+            i.printTask();
+        }
+    }
+
+    public static void completeTask(){
+
+    }
+    public static void removeTask(){
+        
     }
 }
 
@@ -110,6 +151,10 @@ class User{
     }
     public ArrayList<Task> getUserTasks(){
         return userQueue.getQueue();
+    }
+
+    public String getUsername(){
+        return username;
     }
 }
 
