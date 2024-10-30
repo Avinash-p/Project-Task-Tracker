@@ -1,3 +1,8 @@
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -6,9 +11,11 @@ public class LoginInterface {
     public static final Hasher HASHER = new Hasher(2384798);
     public static UserDataBase userDB = new UserDataBase();
     public static final Scanner SCANNER = new Scanner(System.in);
+    public static TaskQueueApp taskQueueApp = new TaskQueueApp();
+    public static DateFormat dateFormatter = new SimpleDateFormat("MM-dd-yyyy");
     public static void main (){
         while (true){
-            System.out.println("Welcome! Enter a to create a user, enter b to login with existing user. Enter c to exit");
+            System.out.println("Welcome! Enter a to create a user. Enter b to login with existing user. Enter c to create new task. Enter d to get all tasks for any user. Enter e to exit.");
             String input = SCANNER.nextLine();
             if (input.equals("a")){
                 userCreationFlow();
@@ -17,6 +24,12 @@ public class LoginInterface {
                 loginFlow();
             }
             if (input.equals("c")){
+                createNewTaskWrapper();
+            }
+            if (input.equals("d")){
+                break;
+            }
+            if (input.equals("e")){
                 break;
             }
         }
@@ -48,10 +61,40 @@ public class LoginInterface {
             System.out.println("Login failed!");
         }
     }
+
+    public static void createNewTaskWrapper(){
+        Date temp4;
+        System.out.println("New task flow! Enter your new task id: ");
+        String temp1 = SCANNER.nextLine();
+        System.out.println("New task flow! Enter your new task title: ");
+        String temp2 = SCANNER.nextLine();
+        System.out.println("New task flow! Enter your username: ");
+        String temp31 = SCANNER.nextLine();
+        User temp3 = userDB.getUser(temp31);
+        System.out.println("Enter your target date in MM-DD-YYYY format: ");
+        String temp41 = SCANNER.nextLine();
+        try{
+            temp4 = dateFormatter.parse(temp41);
+        }catch(ParseException e){
+            System.out.println("Date formatting error");
+            return;
+        }
+        System.out.println("Enter your task's priority: ");
+        int temp5 = SCANNER.nextInt();
+        TaskQueueApp.createNewTask(temp1, temp2, temp3, temp4, temp5);
+    }
+
+    public static void getUserTasks(){
+        System.out.println("New task flow! Enter your username: ");
+        String temp31 = SCANNER.nextLine();
+        User temp3 = userDB.getUser(temp31);
+        System.out.println(temp3.getUserTasks());
+    }
 }
 
 class User{
     private String username, password;
+    public Queue userQueue = new Queue();
     User(String username, String password){
         this.username = username;
         this.password = password;
@@ -65,8 +108,9 @@ class User{
         }
         return false;
     }
-
-
+    public ArrayList<Task> getUserTasks(){
+        return userQueue.getQueue();
+    }
 }
 
 class UserDataBase{
@@ -86,5 +130,13 @@ class UserDataBase{
             System.out.println("No such user in database! Register now!");
         }
         return false;
+    }
+    public User getUser(String username){
+        try{
+            return allUsers.get(username);
+        } catch(NullPointerException e){
+            System.out.println("No such user exists");
+        }
+        return null;
     }
 }

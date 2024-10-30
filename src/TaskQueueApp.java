@@ -6,31 +6,30 @@
 //Next feature: Add a date field on the request and sort queue everytime a new request is added
 
 import java.util.ArrayList;
+import java.util.Date;
 
-public class RequestQueueApp {
+public class TaskQueueApp {
     static Queue globalQueue = new Queue();
     static Queue requestQueue = new Queue();
     static Queue completedQueue = new Queue();
     static Queue removedQueue = new Queue();
     public static void main(String[] args) throws Exception {
-        newRequest("2");
+
 
         requestQueue.printAllRequests();
 
         System.err.println("\n");
-        newRequest("3");
-        newRequest("4");
+
 
         requestQueue.printAllRequests();
-        Request currentRequest = requestQueue.getTopRequest();
-        System.out.println("Current request: "+currentRequest.getRequestID());
+        Task currentRequest = requestQueue.getTopTask();
+        System.out.println("Current request: "+currentRequest.getTaskID());
 
-        newRequest("1");
-        newRequest("2");
+
         requestQueue.printAllRequests();
         dequeue(requestQueue);
-        completeRequest(requestQueue);
-        completeRequest(requestQueue);
+        completeTask(requestQueue);
+        completeTask(requestQueue);
         System.out.println("\nRequest queue printout:");
         requestQueue.printAllRequests();
         System.out.println("\nCompleted queue printout:");
@@ -45,21 +44,36 @@ public class RequestQueueApp {
 
     }
 
-    static public void newRequest(String newRequestID){
-        ArrayList<Request> queueCopy = requestQueue.getQueue();
-        for (Request r : queueCopy){
-            if (newRequestID == r.getRequestID()){
-                System.out.println("Request with id \"" +r.getRequestID()+ "\" already exists. No new requests were created.");
+    static public void newTask(String newTaskID, String newTitle, User newAssignee){
+        ArrayList<Task> queueCopy = requestQueue.getQueue();
+        for (Task r : queueCopy){
+            if (newTaskID == r.getTaskID()){
+                System.out.println("Request with id \"" +r.getTaskID()+ "\" already exists. No new requests were created.");
                 return;
             }
         }
-        Request newReq = new Request(newRequestID);
+        Task newReq = new Task(newTaskID, newTitle, newAssignee);
         globalQueue.enqueue(newReq);
         requestQueue.enqueue(newReq);
+        newAssignee.userQueue.enqueue(newReq);
     }
 
-    static public void completeRequest(Queue targetQueue){
-        Request completedRequest = targetQueue.completeRequest();
+    static public void createNewTask(String newTaskID, String newTitle, User newAssignee, Date newTargetDate, int newPriority){
+        ArrayList<Task> queueCopy = requestQueue.getQueue();
+        for (Task r : queueCopy){
+            if (newTaskID == r.getTaskID()){
+                System.out.println("Request with id \"" +r.getTaskID()+ "\" already exists. No new requests were created.");
+                return;
+            }
+        }
+        Task newReq = new Task(newTaskID, newTitle, newAssignee, newTargetDate, newPriority);
+        globalQueue.enqueue(newReq);
+        requestQueue.enqueue(newReq);
+        newAssignee.userQueue.enqueue(newReq);
+    }
+
+    static public void completeTask(Queue targetQueue){
+        Task completedRequest = targetQueue.completeTask();
         if (completedRequest != null){
             completedQueue.enqueue(completedRequest);
             System.out.println("Request completed successfully.");
@@ -70,7 +84,7 @@ public class RequestQueueApp {
     }
 
     static public void dequeue(Queue targetQueue){
-        Request removedRequest = targetQueue.dequeue();
+        Task removedRequest = targetQueue.dequeue();
         if (removedRequest != null){
             removedQueue.enqueue(removedRequest);
             System.out.println("Request dequeued successfully.");
@@ -80,9 +94,9 @@ public class RequestQueueApp {
         }
     }
 
-    static public Request findRequest(String search){
+    static public Task findRequest(String search){
         try{
-            Request target = searchRequestHelper(search);
+            Task target = searchRequestHelper(search);
             target.printRequest();
             return target;
         }catch(NullPointerException e){
@@ -91,9 +105,9 @@ public class RequestQueueApp {
         return null;
     }
 
-    static public Request searchRequestHelper(String searchTerm){
-        for (Request r: globalQueue.getQueue()){
-            if (r.getRequestID()==searchTerm){
+    static public Task searchRequestHelper(String searchTerm){
+        for (Task r: globalQueue.getQueue()){
+            if (r.getTaskID()==searchTerm){
                 return r;
             }
         }
@@ -102,32 +116,32 @@ public class RequestQueueApp {
 }
 
 class Queue{
-    private ArrayList<Request> queue = new ArrayList<Request>();
+    private ArrayList<Task> queue = new ArrayList<Task>();
     Queue(){
         System.out.println("Queue initialized.");
     }
 
-    public void enqueue(Request x){
+    public void enqueue(Task x){
         queue.add(x);
         System.out.println("Request added to queue.");
     }
 
-    public ArrayList<Request> getQueue(){
-        return new ArrayList<Request>(queue);
+    public ArrayList<Task> getQueue(){
+        return new ArrayList<Task>(queue);
     }
 
-    public Request getTopRequest(){
+    public Task getTopTask(){
         if (queue.size() != 0)
         {return queue.get(0);}
         return null;
     }
 
-    public Request completeRequest(){
-        if (getTopRequest() != null){
-            Request targetRequest = getTopRequest();
-            System.out.println("Marking request \"" + targetRequest.getRequestID() + "\" as closed");
+    public Task completeTask(){
+        if (getTopTask() != null){
+            Task targetRequest = getTopTask();
+            System.out.println("Marking task \"" + targetRequest.getTaskID() + "\" as closed");
+            targetRequest = dequeue();
             targetRequest.markStatus("Completed");
-            targetRequest = dequeueHelper();
             return targetRequest;
         } else{
             System.out.println("Nothing in queue to complete.");
@@ -135,8 +149,8 @@ class Queue{
         }
     }
 
-    public Request dequeue(){
-        Request currentRequest;
+    public Task dequeue(){
+        Task currentRequest;
         if (queue.size()==0){
             return null;
         }else{
@@ -146,10 +160,10 @@ class Queue{
         }
     }
 
-    public Request dequeueHelper(){
-        Request target = queue.get(0);
+    public Task dequeueHelper(){
+        Task target = queue.get(0);
         queue.remove(0);
-        System.out.println("Request removed from queue: " + target.getRequestID());
+        System.out.println("Request removed from queue: " + target.getTaskID());
         return target;
     }
 
@@ -159,22 +173,38 @@ class Queue{
             return;
         }
         System.out.println("Current requests in queue:");
-        for (Request r : queue){
+        for (Task r : queue){
             r.printRequest();
         }
     }
 }
 
-class Request{
-    private String requestID;
+class Task{
+    private String taskID;
     private String status = "New";
-    Request(String newRequestID){
-        this.requestID = newRequestID;
-        System.out.println("New Request created with id: " + requestID);
+    private String title;
+    private User assignee;
+    private Date targetDate;
+    private int priority;
+    
+    Task(String newTaskID, String newTitle, User newAssignee){
+        this.taskID = newTaskID;
+        this.title = newTitle;
+        this.assignee = newAssignee;
+        System.out.println("New Request created with id: " + taskID);
     }
 
-    public String getRequestID(){
-        return requestID;
+    Task(String newTaskID, String newTitle, User newAssignee, Date newTargetDate, int newPriority){
+        this.taskID = newTaskID;
+        this.title = newTitle;
+        this.assignee = newAssignee;
+        this.targetDate = newTargetDate;
+        this.priority = newPriority;
+        System.out.println("New Request created with id: " + taskID);
+    }
+
+    public String getTaskID(){
+        return taskID;
     }
 
     public void markStatus(String x){
@@ -182,6 +212,6 @@ class Request{
     }
 
     public void printRequest(){
-        System.out.println("Request ID: "+requestID+", Request status: "+status);
+        System.out.println("Request ID: "+taskID+", Request status: "+status+", Title: "+title+", Assignee: "+assignee+", Target Date: "+targetDate+", Priority: "+priority);
     }
 }
