@@ -13,7 +13,7 @@ public class UserInterface {
     public static final Scanner SCANNER = new Scanner(System.in);
     public static TaskQueueApp taskQueueApp = new TaskQueueApp();
     public static DateFormat dateFormatter = new SimpleDateFormat("MM-dd-yyyy");
-    public static void main (){
+    public static void main (String[] args){
         while (true){
             System.out.println("Welcome to main menu! Enter a for user management menu. Enter b for task management menu. Enter c to exit.");
             String input = SCANNER.nextLine();
