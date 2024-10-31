@@ -14,6 +14,10 @@ public class UserInterface {
     public static TaskQueueApp taskQueueApp = new TaskQueueApp();
     public static DateFormat dateFormatter = new SimpleDateFormat("MM-dd-yyyy");
     public static void main (String[] args){
+        initialDataLoad();
+        mainMenuFlow();
+    }
+    public static void initialDataLoad(){
         createNewUser("a1", HASHER.hash("a1"));
         createNewUser("a2", HASHER.hash("a2"));
         createNewUser("a3", HASHER.hash("a3"));
@@ -28,7 +32,8 @@ public class UserInterface {
             System.out.println("Date formatting error");
             return;
         }
-        
+    }
+    public static void mainMenuFlow(){
         while (true){
             System.out.println("Welcome to main menu! Enter a for user management menu. Enter b for task management menu. Enter c to exit.");
             String input = SCANNER.nextLine();
