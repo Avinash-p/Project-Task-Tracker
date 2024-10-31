@@ -71,7 +71,6 @@ public class UserInterface {
                 createNewTaskWrapper();
             }
             if (input.equals("b")){
-                getUserTasks();
                 taskActionFlow();
             }
             if (input.equals("c")){
@@ -85,8 +84,9 @@ public class UserInterface {
         if (temp3 == null){
             return;
         }
+        getUserTasks(temp3);
         while (true){
-            System.out.println("Welcome to task actions menu! Enter a to complete a task. Enter b to remove a task from queue. Enter c to unassign a task from selected user. Enter d to go back to main menu.");
+            System.out.println("Welcome to task actions menu! Enter a to complete a task. Enter b to remove a task from queue. Enter c to unassign a task from selected user. Enter d to go reassign a task. Enter e to go back to main menu.");
             String input = SCANNER.nextLine();
             if (input.equals("a")){
                 completeTask(temp3);
@@ -98,6 +98,9 @@ public class UserInterface {
                 unassignTask(temp3);
             }
             if (input.equals("d")){
+                reassignTask(temp3);;
+            }
+            if (input.equals("e")){
                 break;
             }
         }
@@ -154,11 +157,8 @@ public class UserInterface {
         int temp5 = SCANNER.nextInt();
         TaskQueueApp.createNewTask(temp1, temp2, temp3, temp4, temp5);
     }
-    public static void getUserTasks(){
-        System.out.println("New task flow! Enter your username: ");
-        String temp31 = SCANNER.nextLine();
-        User temp3 = userDB.getUser(temp31);
-        System.out.println("List of all tasks for user "+temp31+":");
+    public static void getUserTasks(User temp3){
+        System.out.println("List of all tasks for user "+temp3.getUsername()+":");
         for (Task i : temp3.getUserTasks()){
             i.printTask();
         }
@@ -205,6 +205,19 @@ public class UserInterface {
             task.changeAssignee(null);
         } else{
             System.out.println("Task not assigned to current user. Action cannot be completed.");
+        }
+    }
+    public static void reassignTask(User currentUser){
+        System.out.println("Select a task id from the above tasks");
+        Task task = getTaskById(currentUser, SCANNER.nextLine());
+        System.out.println("Enter the username of new assignee");
+        User targetUser = userDB.getUser(SCANNER.nextLine());
+        if (task != null && targetUser != null){
+            currentUser.userQueue.dequeueTask(task);
+            task.changeAssignee(targetUser);
+            targetUser.userQueue.enqueue(task);
+        } else{
+            System.out.println("Either task does not exist on current user or target user does not exist");
         }
     }
 }
