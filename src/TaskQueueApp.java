@@ -96,7 +96,7 @@ public class TaskQueueApp {
 
     static public Task findRequest(String search){
         try{
-            Task target = searchRequestHelper(search);
+            Task target = searchRequestHelper(search, globalQueue);
             target.printTask();
             return target;
         }catch(NullPointerException e){
@@ -105,8 +105,19 @@ public class TaskQueueApp {
         return null;
     }
 
-    static public Task searchRequestHelper(String searchTerm){
-        for (Task r: globalQueue.getQueue()){
+    static public Task findRequest(String search, Queue targetQueue){
+        try{
+            Task target = searchRequestHelper(search, targetQueue);
+            target.printTask();
+            return target;
+        }catch(NullPointerException e){
+            System.out.println("Request " +search+ " does not exist in the system.");
+        }
+        return null;
+    }
+
+    static public Task searchRequestHelper(String searchTerm, Queue targetQueue){
+        for (Task r: targetQueue.getQueue()){
             if (r.getTaskID()==searchTerm){
                 return r;
             }
@@ -177,6 +188,11 @@ class Queue{
             r.printTask();
         }
     }
+
+    public Task dequeueTask(Task task){
+        queue.remove(task);
+        return task;
+    }
 }
 
 class Task{
@@ -216,5 +232,13 @@ class Task{
 
     public void printTask(){
         System.out.println("Request ID: "+taskID+", Request status: "+status+", Title: "+title+", Assignee: "+assignee.getUsername()+", Target Date: "+targetDate+", Priority: "+priority);
+    }
+
+    public User getAssignee(){
+        return assignee;
+    }
+
+    public void changeAssignee(User user){
+        this.assignee = user;
     }
 }
