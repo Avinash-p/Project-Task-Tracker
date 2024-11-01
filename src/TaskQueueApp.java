@@ -13,36 +13,6 @@ public class TaskQueueApp {
     static Queue taskQueue = new Queue();
     static Queue completedQueue = new Queue();
     static Queue removedQueue = new Queue();
-    public static void main(String[] args) throws Exception {
-
-
-        taskQueue.printAllTasks();
-
-        System.err.println("\n");
-
-
-        taskQueue.printAllTasks();
-        Task currentTask = taskQueue.getTopTask();
-        System.out.println("Current task: "+currentTask.getTaskID());
-
-
-        taskQueue.printAllTasks();
-        dequeue(taskQueue);
-        completeTask(taskQueue);
-        completeTask(taskQueue);
-        System.out.println("\ntask queue printout:");
-        taskQueue.printAllTasks();
-        System.out.println("\nCompleted queue printout:");
-        completedQueue.printAllTasks();
-        System.out.println("\nRemoved queue printout:");
-        removedQueue.printAllTasks();
-        findTask("5");
-        findTask("2");
-        findTask("3");
-        findTask("4");
-        findTask("1");
-
-    }
 
     static public void newTask(String newTaskID, String newTitle, User newAssignee){
         ArrayList<Task> queueCopy = taskQueue.getQueue();
@@ -128,13 +98,9 @@ public class TaskQueueApp {
 
 class Queue{
     private ArrayList<Task> queue = new ArrayList<Task>();
-    Queue(){
-        System.out.println("Queue initialized.");
-    }
 
     public void enqueue(Task x){
         queue.add(x);
-        System.out.println("task added to queue.");
     }
 
     public ArrayList<Task> getQueue(){
