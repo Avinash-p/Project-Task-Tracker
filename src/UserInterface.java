@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class UserInterface {
-    public static final Hasher HASHER = new Hasher(2384798);
+    public static final Hasher HASHER = new Hasher(235164534);
     public static UserDataBase userDB = new UserDataBase();
     public static final Scanner SCANNER = new Scanner(System.in);
     public static TaskQueueApp taskQueueApp = new TaskQueueApp();
@@ -179,7 +179,7 @@ public class UserInterface {
         if (task != null){
             task.markStatus("Completed");
             user.userQueue.dequeueTask(task);
-            TaskQueueApp.requestQueue.dequeueTask(task);
+            TaskQueueApp.taskQueue.dequeueTask(task);
             TaskQueueApp.completedQueue.enqueue(task);
         } else{
             System.out.println("Task not found in current user's queue. Action cannot be completed.");
@@ -191,7 +191,7 @@ public class UserInterface {
         if (task != null){
             task.markStatus("Removed");
             user.userQueue.dequeueTask(task);
-            TaskQueueApp.requestQueue.dequeueTask(task);
+            TaskQueueApp.taskQueue.dequeueTask(task);
             TaskQueueApp.removedQueue.enqueue(task);
         } else{
             System.out.println("Task not assigned to current user. Action cannot be completed.");
